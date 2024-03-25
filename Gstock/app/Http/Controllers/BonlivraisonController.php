@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bonlivraison;
+use App\Models\Client;
 use Illuminate\Http\Request;
 
 class BonlivraisonController extends Controller
@@ -12,7 +13,8 @@ class BonlivraisonController extends Controller
      */
     public function index()
     {
-        //
+        $bonlivraisons = Bonlivraison::paginate(6);
+        return view('Bonlivraisons.bonlivraison', compact('bonlivraisons'));
     }
 
     /**
@@ -20,7 +22,9 @@ class BonlivraisonController extends Controller
      */
     public function create()
     {
-        //
+        $bonlivraison = Bonlivraison::all(); // Fetch all villes
+        $clients = Client::all();
+    return view('Bonlivraisons.createbonlivraison', compact('bonlivraison' , 'clients'));
     }
 
     /**
@@ -28,7 +32,17 @@ class BonlivraisonController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'date' => 'required|date',
+            'regle' => 'required|boolean',
+            'client_id' => 'required|exists:clients,id',
+            'created_by' => 'required|string|max:255',
+            'updated_by' => 'required|string|max:255',
+        ]);
+
+        Bonlivraison::create($request->all());
+
+        return redirect()->route('bonlivraisons.index')->with('success', 'Bonlivraison created successfully.');
     }
 
     /**
@@ -36,30 +50,49 @@ class BonlivraisonController extends Controller
      */
     public function show(Bonlivraison $bonlivraison)
     {
-        //
+        // return view('Bonlivraisons.show', compact('bonlivraison'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Bonlivraison $bonlivraison)
-    {
-        //
-    }
+    public function edit($id)
+{
+    $bonlivraison = Bonlivraison::findOrFail($id);
+    $clients = Client::all();
+    return view('Bonlivraisons.editbonlivraison', compact('bonlivraison', 'clients'));
+}
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Bonlivraison $bonlivraison)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'date' => 'required|date',
+            'regle' => 'required|boolean',
+            'client_id' => 'required|exists:clients,id',
+            'created_by' => 'required|string|max:255',
+            'updated_by' => 'required|string|max:255',
+        ]);
+
+        $bonlivraison = Bonlivraison::findOrFail($id);
+
+        $bonlivraison->update($request->all());
+
+        return redirect()->route('bonlivraisons.index')->with('success', 'Bonlivraison updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Bonlivraison $bonlivraison)
+    public function destroy($id)
     {
-        //
+        $bonlivraison = Bonlivraison::findOrFail($id);
+        $bonlivraison->delete();
+
+        return redirect()->route('bonlivraisons.index')->with('success', 'Bonlivraison deleted successfully.');
     }
 }

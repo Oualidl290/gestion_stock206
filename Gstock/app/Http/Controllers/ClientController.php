@@ -12,7 +12,8 @@ class ClientController extends Controller
      */
     public function index()
     {
-        //
+        $clients = Client::paginate(6);
+        return view('Clients.clients', compact('clients'));
     }
 
     /**
@@ -20,7 +21,7 @@ class ClientController extends Controller
      */
     public function create()
     {
-        //
+        return view('Clients.createclient');
     }
 
     /**
@@ -28,7 +29,26 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate(
+            [
+                'reseau_social' => 'required|string|max:255',
+'nom' => 'required|string|max:255',
+'prenom' => 'required|string|max:255',
+'email' => 'required|string|max:255',
+'ville' => 'required|string|max:255',
+'adress' => 'required|string|max:255',
+'tel' => 'required|string|max:255',
+'created_by' => 'required|string|max:255',
+'updated_by' => 'required|string|max:255',
+
+            ]
+        );
+
+
+        Client::create($request->all());
+
+        return redirect()->route('Clients.clients')->with('success', 'client created successfully.');
+
     }
 
     /**
@@ -42,24 +62,43 @@ class ClientController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Client $client)
+    public function edit(Client $clients , $id)
     {
-        //
+        $clients = Client::findOrFail($id);
+        return view('Clients.editclient', compact('clients'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Client $client)
-    {
-        //
-    }
+    public function update(Request $request, $id)
+{
+    $validatedData = $request->validate([
+        'reseau_social' => 'required|string|max:255',
+        'nom' => 'required|string|max:255',
+        'prenom' => 'required|string|max:255',
+        'email' => 'required|string|max:255',
+        'ville' => 'required|string|max:255',
+        'adress' => 'required|string|max:255',
+        'tel' => 'required|string|max:255',
+        'ICE' => 'required|numeric|max:255',
+        'created_by' => 'required|string|max:255',
+        'updated_by' => 'required|string|max:255',
+    ]);
+
+    Client::findOrFail($id)->update($validatedData);
+
+    return redirect()->route('Clients.clients')->with('success', 'Client updated successfully.');
+}
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Client $client)
+    public function destroy($id)
     {
-        //
+        $clients = Client::findOrFail($id);
+        $clients->delete();
+
+        return redirect()->route('Clients.clients')->with('success', 'client deleted successfully.');
     }
 }
