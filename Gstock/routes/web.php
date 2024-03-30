@@ -32,3 +32,12 @@ Route::post('/storebonlivraison', [BonlivraisonController::class, 'store'])->nam
 Route::get('/editbonlivraison/{id}', [BonlivraisonController::class, 'edit'])->name('editbonlivraison');
 Route::put('/editbonlivraison/{id}', [BonlivraisonController::class, 'update'])->name('updatebonlivraison');
 Route::delete('/deletebonlivraison/{id}', [BonlivraisonController::class, 'destroy'])->name('deletebonlivraison');
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Route::resource("/familles", famillesController::class);
+Route::resource("/sousfamilles", sousfamillesController::class);
+
+
+
+
+
